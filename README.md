@@ -75,7 +75,6 @@ cat_health/
 ├── cat_data/            # 用户数据存储
 │   ├── profiles/        # 猫咪档案
 │   ├── records/         # 健康数据
-│   ├── avatars/         # 猫咪头像
 │   └── uploads/         # 上传文件
 ├── templates/           # HTML模板
 └── static/             # 静态资源
