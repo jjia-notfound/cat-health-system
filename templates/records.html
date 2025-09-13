@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h1 class="text-center mb-4">📋 {{ cat_name }} 的检测记录</h1>
+        
+        {% if records %}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>检测时间</th>
+                                <th>疾病类型</th>
+                                <th>风险概率</th>
+                                <th>风险等级</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records|reverse %}
+                            {% for disease, probability in record.risk_results.items() %}
+                            <tr>
+                                <td>{{ record.date[:19].replace('T', ' ') }}</td>
+                                <td>{{ disease }}</td>
+                                <td>{{ "%.1f"|format(probability) }}%</td>
+                                <td>
+                                    {% if probability < 30 %}
+                                        <span class="badge bg-success">低风险</span>
+                                    {% elif probability < 70 %}
+                                        <span class="badge bg-warning">中风险</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">高风险</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center">
+                <p class="text-muted">暂无检测记录</p>
+                <a href="{{ url_for('detect_disease', cat_name=cat_name) }}" class="btn btn-primary">
+                    🔍 立即检测
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('cat_detail', cat_name=cat_name) }}" class="btn btn-secondary">返回详情</a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">返回首页</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

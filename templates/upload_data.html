@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="text-center mb-4">📊 上传 {{ cat_name }} 的数据</h1>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4>选择上传方式</h4>
+            </div>
+            <div class="card-body">
+                <!-- 文件上传 -->
+                <h5>方式1：上传CSV文件</h5>
+                <form method="POST" enctype="multipart/form-data" onsubmit="return validateFile()">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">选择CSV文件</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".csv">
+                        <div class="form-text">
+                            文件格式：CSV文件，包含列：Date, Water(ml), Food(g), Urination, Defecation, Vomiting, Diarrhea, Weight(kg)
+                        </div>
+                        <div class="alert alert-warning mt-2" id="fileAlert" style="display: none;">
+                            请先选择文件再点击上传！
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">上传文件</button>
+                </form>
+                
+                <hr>
+                
+                <!-- 手动输入 -->
+                <h5>方式2：手动输入数据</h5>
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">日期</label>
+                                <input type="date" class="form-control" id="date" name="date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="water" class="form-label">饮水量 (ml)</label>
+                                <input type="number" class="form-control" id="water" name="water" step="0.1" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="food" class="form-label">进食量 (g)</label>
+                                <input type="number" class="form-control" id="food" name="food" step="0.1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="weight" class="form-label">体重 (kg)</label>
+                                <input type="number" class="form-control" id="weight" name="weight" step="0.1" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="urination" class="form-label">排尿次数</label>
+                                <input type="number" class="form-control" id="urination" name="urination" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="defecation" class="form-label">排便次数</label>
+                                <input type="number" class="form-control" id="defecation" name="defecation" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="vomiting" class="form-label">呕吐次数</label>
+                                <input type="number" class="form-control" id="vomiting" name="vomiting" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="diarrhea" class="form-label">腹泻次数</label>
+                                <input type="number" class="form-control" id="diarrhea" name="diarrhea" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">添加记录</button>
+                        <a href="{{ url_for('cat_detail', cat_name=cat_name) }}" class="btn btn-secondary">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateFile() {
+    const fileInput = document.getElementById('file');
+    const alertDiv = document.getElementById('fileAlert');
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alertDiv.style.display = 'block';
+        return false; // 阻止表单提交
+    }
+    
+    alertDiv.style.display = 'none';
+    return true; // 允许表单提交
+}
+
+// 当选择文件时隐藏提醒
+const fileInput = document.getElementById('file');
+fileInput.addEventListener('change', function() {
+    const alertDiv = document.getElementById('fileAlert');
+    if (this.files && this.files.length > 0) {
+        alertDiv.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="text-center mb-4">🩺 {{ cat_name }} 健康检测结果</h1>
+        
+        {% if error %}
+        <div class="alert alert-warning">
+            <h4>⚠️ 检测信息</h4>
+            <p>{{ error }}</p>
+        </div>
+        {% else %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>📊 疾病风险评估</h4>
+            </div>
+            <div class="card-body">
+                {% for disease, probability in risk_results.items() %}
+                <div class="mb-3 p-3 border rounded">
+                    <h5>{{ disease }}</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>风险等级:</strong>
+                            <span class="badge 
+                                {% if probability < 30 %}bg-success
+                                {% elif probability < 70 %}bg-warning
+                                {% else %}bg-danger{% endif %}">
+                                {% if probability < 30 %}低风险
+                                {% elif probability < 70 %}中风险
+                                {% else %}高风险{% endif %}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>风险概率:</strong> {{ "%.1f"|format(probability) }}%
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <strong>建议:</strong> 
+                        {% if probability < 30 %}
+                            健康状况良好，继续保持
+                        {% elif probability < 70 %}
+                            需要关注，建议观察症状变化
+                        {% else %}
+                            建议及时就医检查
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="text-center">
+            <a href="{{ url_for('cat_detail', cat_name=cat_name) }}" 
+               class="btn btn-primary">返回详情页</a>
+            <a href="{{ url_for('view_records', cat_name=cat_name) }}" 
+               class="btn btn-info">查看历史记录</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

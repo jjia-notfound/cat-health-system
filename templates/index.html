@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="text-center mb-4">🏠 猫咪健康管理系统</h1>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3>我的猫咪</h3>
+            </div>
+            <div class="card-body">
+                {% if cats %}
+                    <div class="row">
+                        {% for cat in cats %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ cat.name }}</h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            创建时间: {{ cat.created_date[:10] }}
+                                        </small>
+                                    </p>
+                                    <a href="{{ url_for('cat_detail', cat_name=cat.name) }}" 
+                                       class="btn btn-primary">查看详情</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center">
+                        <p class="text-muted">还没有添加猫咪</p>
+                        <a href="{{ url_for('create_cat') }}" class="btn btn-success">
+                            添加第一只猫咪 🐱
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('create_cat') }}" class="btn btn-primary">
+                ➕ 添加新猫咪
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

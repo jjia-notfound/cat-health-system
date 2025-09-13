@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="text-center mb-4">🐱 {{ cat_name }} 的档案</h1>
+        
+        {% if profile %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>基本信息</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>名称:</strong> {{ cat_name }}</p>
+                <p><strong>创建时间:</strong> {{ profile.created_date[:10] }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>数据管理</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('upload_data', cat_name=cat_name) }}" 
+                           class="btn btn-primary w-100 mb-2">
+                            📊 上传数据
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('detect_disease', cat_name=cat_name) }}" 
+                           class="btn btn-success w-100 mb-2">
+                            🔍 健康检测
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if cat_data is not none %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>数据概览</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>记录条数:</strong> {{ cat_data.shape[0] if cat_data is not none else 0 }}</p>
+                {% if cat_data is not none and not cat_data.empty %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>饮水量(ml)</th>
+                                <th>进食量(g)</th>
+                                <th>排尿次数</th>
+                                <th>排便次数</th>
+                                <th>呕吐次数</th>
+                                <th>腹泻次数</th>
+                                <th>体重(kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for _, row in cat_data.tail(5).iterrows() %}
+                            <tr>
+                                <td>{{ row['Date'] }}</td>
+                                <td>{{ row['Water(ml)'] }}</td>
+                                <td>{{ row['Food(g)'] }}</td>
+                                <td>{{ row['Urination'] }}</td>
+                                <td>{{ row['Defecation'] }}</td>
+                                <td>{{ row['Vomiting'] }}</td>
+                                <td>{{ row['Diarrhea'] }}</td>
+                                <td>{{ row['Weight(kg)'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-danger" onclick="deleteCatData()">
+                        🗑️ 清空数据记录
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="text-center">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">返回首页</a>
+            <a href="{{ url_for('view_records', cat_name=cat_name) }}" 
+               class="btn btn-info">查看检测记录</a>
+            <button type="button" class="btn btn-danger" onclick="deleteCat()">
+                🗑️ 删除猫咪档案
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function deleteCatData() {
+    if (confirm('确定要清空这只猫咪的所有数据记录吗？此操作不可恢复！')) {
+        fetch('{{ url_for("delete_data", cat_name=cat_name) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('数据记录已清空！');
+                location.reload();
+            } else {
+                alert('操作失败：' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('操作失败：' + error);
+        });
+    }
+}
+
+function deleteCat() {
+    if (confirm('确定要删除这只猫咪的完整档案吗？此操作将删除猫咪的所有数据、记录和档案信息，不可恢复！')) {
+        fetch('{{ url_for("delete_cat", cat_name=cat_name) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('猫咪档案已删除！');
+                window.location.href = '{{ url_for("index") }}';
+            } else {
+                alert('操作失败：' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('操作失败：' + error);
+        });
+    }
+}
+</script>
+{% endblock %}
